@@ -1,7 +1,5 @@
-import SlimSelect from 'slim-select';
 import Notiflix from 'notiflix';
-import { fetchBreeds } from './cat-api';
-import { fetchCatByBreed } from './cat-api';
+import { fetchBreeds, fetchCatByBreed } from './cat-api';
 
 const searchForm = document.querySelector('.breed-select');
 const showInfo = document.querySelector('.cat-info');
@@ -14,7 +12,6 @@ fetchBreeds()
   .then(data => {
     loader.hidden = true;
     searchForm.hidden = false;
-    errorEl.hidden = true;
     numberBreeds = data;
 
     for (let i = 0; i < numberBreeds.length; i += 1) {
@@ -25,13 +22,16 @@ fetchBreeds()
       option.innerHTML = `${breed.name}`;
       searchForm.appendChild(option);
     }
+    searchForm.classList.remove('is-hidden');
   })
   .catch(function (error) {
-    console.log(error);
+    loader.hidden = true;
+    console.error(error);
     Notiflix.Notify.warning(
       'Oops! Something went wrong! Try reloading the page!'
     );
     clearHTML();
+    errorEl.classList.remove('is-hidden');
     return;
   });
 
@@ -41,26 +41,27 @@ function onSearch(evt) {
   clearHTML();
 
   fetchCatByBreed(breedId)
-  .then(data => {
-    loader.hidden = true;
-    numberBreeds = data;
-    if (!numberBreeds[breedId].image) {
+    .then(() => {
+      loader.hidden = true;
+      
+      const catCard = `<img src="${numberBreeds[breedId].image.url}" width="500 px" alt="cat image"><div class="cat-info-desc"><h2>${numberBreeds[breedId].name}</h2><p>Description: ${numberBreeds[breedId].description}</p><p>Temperament: ${numberBreeds[breedId].temperament}</p></div>`;
+
+      showInfo.innerHTML = catCard;
+      showInfo.style.display = 'flex';
+      showInfo.style.marginTop = '20px';
+      showInfo.style.fontSize = '20px';
+    })
+    .catch(function (error) {
+      console.error(error);
       Notiflix.Notify.warning(
         'Oops! Something went wrong! Try reloading the page!'
       );
-      throw new Error(data.statusText);
-    }
-    const catCard = `<img src="${numberBreeds[breedId].image.url}" width="500 px" alt="cat image"><h2>${numberBreeds[breedId].name}</h2><p>Description: ${numberBreeds[breedId].description}</p><p>Temperament: ${numberBreeds[breedId].temperament}</p>`;
 
-    showInfo.innerHTML = catCard;
-    showInfo.style.marginTop = '20px';
-    showInfo.style.fontSize = '20px';
-  })
-  .catch(function (error) {
-    console.log(error);
-    clearHTML();
-    return;
-  });
+      searchForm.hidden = true;
+      errorEl.classList.remove('is-hidden');
+      clearHTML();
+      return;
+    });
 }
 
 function clearHTML() {

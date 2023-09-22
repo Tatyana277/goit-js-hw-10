@@ -1,9 +1,11 @@
-const BASE_URL = `https://api.thecatapi.com/v1/breeds`;
+const BASE_URL = `https://api.thecatapi.com/v1`;
 const apiKey =
   'live_8SPOJy6FCMzKrgiTFjoXQgCe3hD2SbxmUpZ4A9kLAD6vIJlUZH1FFXFqlU56YLEl';
 
+const urlBreeds = BASE_URL + "/breeds";
+
 export function fetchBreeds() {
-  return fetch(BASE_URL, {
+  return fetch(urlBreeds, {
     headers: {
       'x-api-key': apiKey,
     },
@@ -11,13 +13,13 @@ export function fetchBreeds() {
     if (!response.ok) {
       throw new Error(response.statusText);
     }
-
     return response.json();
   });
 };
 
 export function fetchCatByBreed(breedId) {
-  return fetch(BASE_URL, {
+  const urlSearch = BASE_URL + `/images/search?breed_id=${breedId}`;
+  return fetch(urlSearch, {
     headers: {
       'x-api-key': apiKey,
       breed_ids: breedId,

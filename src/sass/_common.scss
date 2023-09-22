@@ -83,3 +83,13 @@
         box-shadow: .2em -.2em 0 0 currentcolor;
     }
 }
+
+.is-hidden {
+    display: none;
+}
+
+.cat-info-desc {
+    display: block;
+    margin-left: 30px;
+    max-width: 600px;
+}
